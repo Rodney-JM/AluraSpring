@@ -1,5 +1,6 @@
 package br.com.rodjrm.ScreenMatch.principal;
 
+import br.com.rodjrm.ScreenMatch.model.DadosEpisodio;
 import br.com.rodjrm.ScreenMatch.model.DadosSerie;
 import br.com.rodjrm.ScreenMatch.model.DadosTemporada;
 import br.com.rodjrm.ScreenMatch.service.ConsumoApi;
@@ -35,5 +36,14 @@ public class Principal {
             temporadas.add(dadosTemporada);
         }
         temporadas.forEach(System.out::println);
+
+//        for(int i = 0; i< dadosSerie.totalTemporadas(); i++){
+//            List<DadosEpisodio> episodiosTemporada = temporadas.get(i).episodios();
+//            for (int j = 0; j< episodiosTemporada.size(); j++){
+//                System.out.println(episodiosTemporada.get(j).titulo());
+//            }
+//        }
+
+        temporadas.forEach(t-> t.episodios().forEach(e -> System.out.println(e.titulo()))); // lambdas sao funcoes com parametros imbutidos(funcoes anonimas)
     }
 }
