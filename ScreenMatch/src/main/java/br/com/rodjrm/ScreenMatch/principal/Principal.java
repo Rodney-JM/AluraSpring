@@ -7,9 +7,9 @@ import br.com.rodjrm.ScreenMatch.service.ConsumoApi;
 import br.com.rodjrm.ScreenMatch.service.ConverteDados;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 public class Principal {
     private Scanner in = new Scanner(System.in);
@@ -45,5 +45,29 @@ public class Principal {
 //        }
 
         temporadas.forEach(t-> t.episodios().forEach(e -> System.out.println(e.titulo()))); // lambdas sao funcoes com parametros imbutidos(funcoes anonimas)
+
+//        List<String> nomes = Arrays.asList("Rodney", "Paulo", "Jonas");
+//
+//        nomes.stream()
+//                //operacoes intermediarias
+//                .sorted()
+//                .limit(2)
+//                .filter(n -> n.startsWith("R"))
+//                .map(n -> n.toUpperCase())
+//                //operacoes finais
+//                .forEach(System.out::println);
+
+        List<DadosEpisodio> dadosEpisodios = temporadas.stream()
+                .flatMap(t -> t.episodios().stream())
+                .collect(Collectors.toList());
+
+        System.out.println("Top 5 episodios: ");
+        dadosEpisodios.stream()
+                .filter(e -> !e.avaliacao().equalsIgnoreCase("N/A"))
+                .sorted(Comparator.comparing(DadosEpisodio::avaliacao).reversed())//compara a avaliacao deles e retorna eles do maior para o menor
+                .limit(5)
+                .forEach(System.out::println);
+
+        List<Episodio> episodios
     }
 }
