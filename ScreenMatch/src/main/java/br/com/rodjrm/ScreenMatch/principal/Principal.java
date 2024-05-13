@@ -3,10 +3,13 @@ package br.com.rodjrm.ScreenMatch.principal;
 import br.com.rodjrm.ScreenMatch.model.DadosEpisodio;
 import br.com.rodjrm.ScreenMatch.model.DadosSerie;
 import br.com.rodjrm.ScreenMatch.model.DadosTemporada;
+import br.com.rodjrm.ScreenMatch.model.Episodio;
 import br.com.rodjrm.ScreenMatch.service.ConsumoApi;
 import br.com.rodjrm.ScreenMatch.service.ConverteDados;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
@@ -64,10 +67,35 @@ public class Principal {
         System.out.println("Top 5 episodios: ");
         dadosEpisodios.stream()
                 .filter(e -> !e.avaliacao().equalsIgnoreCase("N/A"))
+                .peek(e-> System.out.println("Primeiro filtro(N/A)" + e))
                 .sorted(Comparator.comparing(DadosEpisodio::avaliacao).reversed())//compara a avaliacao deles e retorna eles do maior para o menor
+                .peek(e -> System.out.println("Ordenação " + e))
                 .limit(5)
+                .peek(e -> System.out.println("Limite " + e))
+                .map(e-> e.titulo().toUpperCase())
+                .peek(e -> System.out.println("Ordenação " + e))
                 .forEach(System.out::println);
 
-        List<Episodio> episodios
+        List<Episodio> episodios = temporadas.stream()
+                .flatMap(t -> t.episodios().stream()
+                        .map(e -> new Episodio(t.numero(), e))
+                ).collect(Collectors.toList());
+
+        episodios.forEach(System.out::println);
+
+        System.out.println("A partir de que ano você deseja ver os episódios?");
+        var ano = in.nextInt();
+        in.nextLine();
+
+        LocalDate dataBusca = LocalDate.of(ano, 1, 1);
+
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        episodios.stream()
+                .filter(e -> e.getDataLancamento()!= null && e.getDataLancamento().isAfter(dataBusca))
+                .forEach(e -> System.out.println(
+                        "Temporada: " + e.getTemporada() +
+                                " Episodio: "+ e.getTitulo() +
+                                " Data Lançamento: " + e.getDataLancamento().format(dtf)
+                ));
     }
 }
