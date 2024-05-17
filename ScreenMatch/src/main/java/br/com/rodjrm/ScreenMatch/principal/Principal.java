@@ -78,8 +78,7 @@ public class Principal {
 
         List<Episodio> episodios = temporadas.stream()
                 .flatMap(t -> t.episodios().stream()
-                        .map(e -> new Episodio(t.numero(), e))
-                ).collect(Collectors.toList());
+                        .map(e -> new Episodio(t.numero(), e))).collect(Collectors.toList());
 
         episodios.forEach(System.out::println);
 
@@ -110,5 +109,21 @@ public class Principal {
                                 " Episodio: "+ e.getTitulo() +
                                 " Data Lançamento: " + e.getDataLancamento().format(dtf)
                 ));
+
+        Map<Integer, Double> avaliacoesTemporadas = episodios.stream()
+                .filter(e -> e.getAvaliacao()>0.0)
+                .collect(Collectors.groupingBy(Episodio::getTemporada,
+                        Collectors.averagingDouble(Episodio::getAvaliacao)));//Agrupando as avaliações por temporada
+
+        System.out.println(avaliacoesTemporadas);
+
+        DoubleSummaryStatistics est = episodios.stream()
+                .filter(e -> e.getAvaliacao()> 0.0)
+                .collect(Collectors.summarizingDouble(Episodio::getAvaliacao));//cria uma coleção com as avaliacoes
+
+        System.out.println("Média: "+est.getAverage());
+        System.out.println("Melhor episódio: "+est.getMax());
+        System.out.println("Pior episódio: "+est.getMin());
+        System.out.println("Quantidade de episódios observados: "+est.getCount());
     }
 }
